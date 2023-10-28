@@ -229,7 +229,7 @@ const Wallet = (user: UserType) => {
           <div className="mt-6 flex items-center justify-center">
             <div className="flex items-center justify-center">
               <p className="text-xs uppercase tracking-wide text-gray-500">
-                Wallet Address: &nbsp;
+                {'Wallet Address: '}
               </p>
             </div>
 
