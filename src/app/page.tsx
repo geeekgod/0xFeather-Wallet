@@ -21,7 +21,7 @@ export default function Home() {
 
             <div className="max-w-3xl text-center mx-auto">
               <h1 className="block font-medium text-gray-200 text-4xl sm:text-5xl md:text-6xl lg:text-7xl">
-                Now it's easier than ever to buy Bhangaar
+                Now it&apos;s easier than ever to buy Bhangaar
               </h1>
             </div>
 
