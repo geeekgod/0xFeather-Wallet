@@ -113,9 +113,14 @@ export default function SignUp() {
                       <p className="hidden text-xs text-red-600 mt-2" id="password-error">8+ characters required</p>
                     </div>
 
-                    <button type="submit"
-                      className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800">
-                      {loading ? "loading..." : "Sign Up"}
+                    <button
+                      disabled={loading}
+                      type="submit" className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800">
+                      {loading ?
+                        <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
+                          <span className="sr-only">Loading...</span>
+                        </div>
+                        : "Sign Up"}
                     </button>
                   </div>
                 </form>
