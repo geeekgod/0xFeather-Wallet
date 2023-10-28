@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react"
 
 type UserType = Omit<User, 'password'>
 
-const LogOut = (user: UserType) => {
+const LogOutButton = (user: UserType) => {
   return (
     <button onClick={() => {
       signOut({ callbackUrl: '/' })
@@ -16,4 +16,4 @@ const LogOut = (user: UserType) => {
   )
 }
 
-export default LogOut
+export default LogOutButton

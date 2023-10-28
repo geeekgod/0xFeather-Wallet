@@ -15,4 +15,8 @@ model User {
   email           String  @unique
   password        String
   ethereumAddress String?
+  ethereumPrivKey String?
+  ethereumBalance Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

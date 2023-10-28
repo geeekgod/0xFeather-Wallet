@@ -2,8 +2,9 @@ import Wallet from "@/components/Wallet";
 import Link from "next/link";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
-import LogOut from "@/components/LogOut";
+import LogOutButton from "@/components/LogOutButton";
 import prisma from "@/lib/prisma";
+import { signOut } from "next-auth/react";
 
 const getSessionUser = async () => {
   const session = await getServerSession(authOptions);
@@ -23,6 +24,10 @@ const getUserFromDb = async (email: string) => {
       id: true,
       email: true,
       ethereumAddress: true,
+      ethereumBalance: true,
+      ethereumPrivKey: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
   return user;
@@ -69,7 +74,10 @@ export default async function App() {
                 <>
                   <p className="text-lg text-gray-400">Welcome back, {user.email}!</p>
                   {/* Log out next auth */}
-                  <LogOut {...user} />
+                  <LogOutButton {...user} />
+
+                  {/* Crypto Wallet */}
+                  <Wallet {...user} />
                 </>
               ) : (
                 <div className="flex justify-center">
