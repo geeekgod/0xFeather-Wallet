@@ -13,6 +13,7 @@ const Wallet = (user: UserType) => {
   );
   const [wallet, setWallet] = useState<ethers.Wallet | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [balance, setBalance] = useState<string | null>(null);
   const [transactionCount, setTransactionCount] = useState<string | null>(null);
   const [transferAmount, setTransferAmount] = useState<string | null>(null);
@@ -116,6 +117,10 @@ const Wallet = (user: UserType) => {
       return;
     };
 
+    if (isNaN(parseFloat(transferAmount))) {
+      setError('Please enter a valid transfer amount');
+      return;
+    }
     try {
       const transaction = await wallet.sendTransaction({
         to: recepientAddress,
@@ -124,6 +129,7 @@ const Wallet = (user: UserType) => {
 
       await transaction.wait();
       fetchBalance();
+      setSuccess("Transaction successful!")
       setTimeout(() => { setTransferModalOpen(false) }, 6000);
     }
     catch (error: any) {
@@ -146,11 +152,24 @@ const Wallet = (user: UserType) => {
     }
   }, [error]);
 
+  useEffect(() => {
+    if (success) {
+      setTimeout(() => {
+        setSuccess(null);
+      }, 5000);
+    }
+  }, [success]);
+
   return (
     <div>
       {
         error && (
-          <p className="text-center fixed top-5 left-5 z-[1000] w-1/2 bg-red-300 py-4 mb-6 rounded">{error}</p>
+          <p className="text-center fixed top-5 left-5 z-[1000] w-1/2 bg-red-700 py-4 mb-6 rounded">{error}</p>
+        )
+      }
+      {
+        success && (
+          <p className="text-center fixed top-5 left-5 z-[1000] w-1/2 bg-green-700 py-4 mb-6 rounded">{success}</p>
         )
       }
       {wallet && (
@@ -275,6 +294,7 @@ const Wallet = (user: UserType) => {
 
                         <div className="mt-1 flex items-center justify-center">
                           <input
+                            required
                             onChange={(e) => setRecepientAddress(e.target.value)}
                             className="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400"
                             placeholder="Recepient Address"
@@ -292,6 +312,7 @@ const Wallet = (user: UserType) => {
 
                         <div className="mt-1 flex items-center justify-center">
                           <input
+                            required
                             onChange={(e) => setTransferAmount(e.target.value)}
                             className="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400"
                             placeholder="Transfer Amount"
