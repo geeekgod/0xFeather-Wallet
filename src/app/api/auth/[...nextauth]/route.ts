@@ -1,6 +1,5 @@
 import NextAuth, { AuthOptions, User as NextUser } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
-import mongoose from 'mongoose';
 import { compare } from 'bcryptjs';
 import prisma from '@/lib/prisma';
 
@@ -26,8 +25,6 @@ export const authOptions: AuthOptions = {
         try {
           if (!credentials?.email) return null;
           if (!credentials.email) return null;
-
-          await mongoose.connect(connectionStr);
 
           // const user = await User.findOne({ email: credentials.email });
           const user = await prisma.user.findUnique({
