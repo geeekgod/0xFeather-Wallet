@@ -14,6 +14,7 @@ const Wallet = (user: UserType) => {
   const [wallet, setWallet] = useState<ethers.Wallet | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [balance, setBalance] = useState<string | null>(null);
+  const [transactionCount, setTransactionCount] = useState<string | null>(null);
 
   useEffect(() => {
 
@@ -79,9 +80,12 @@ const Wallet = (user: UserType) => {
     if (!wallet.address) return;
 
     const balance = await wallet.provider.getBalance(wallet.address);
+    const transactionCount = await wallet.provider.getTransactionCount(wallet.address);
 
     const etherString = ethers.formatEther(balance);
     setBalance(etherString);
+
+    setTransactionCount(transactionCount.toString());
   }
 
   useEffect(() => {
@@ -96,14 +100,62 @@ const Wallet = (user: UserType) => {
 
   return (
     <div>
-      {error && <p>{error}</p>}
+      {
+        error && (
+          <p className="text-center bg-red-300 py-4 mb-6 rounded">{error}</p>
+        )
+      }
       {wallet && (
-        <div>
-          <h3>Wallet Details:</h3>
-          <p>Address: {wallet.address}</p>
-          <p>Private Key: {wallet.privateKey}</p>
-          <p>Balance: {balance}</p>
-          <button onClick={fetchBalance}>Refresh Balance</button>
+        <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+          <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+
+            {/* Balance */}
+            <div className="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-slate-900 dark:border-gray-800">
+              <div className="p-4 md:p-5">
+                <div className="flex items-center justify-center">
+                  <p className="text-xs uppercase tracking-wide text-gray-500">
+                    Total Balance
+                  </p>
+                </div>
+
+                <div className="mt-1 flex items-center justify-center">
+                  <h3 className="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-200">
+                    {
+                      balance ?
+                        `${balance} ETH` :
+                        <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
+                          <span className="sr-only">Loading...</span>
+                        </div>
+                    }
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            {/* Total ETH Transactions */}
+            <div className="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-slate-900 dark:border-gray-800">
+              <div className="p-4 md:p-5">
+                <div className="flex items-center justify-center">
+                  <p className="text-xs uppercase tracking-wide text-gray-500">
+                    Transactions
+                  </p>
+                </div>
+
+                <div className="mt-1 flex items-center justify-center">
+                  <h3 className="text-xl sm:text-2xl font-medium text-gray-800 dark:text-gray-200">
+                    {
+                      transactionCount ?
+                        transactionCount :
+                        <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
+                          <span className="sr-only">Loading...</span>
+                        </div>
+                    }
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+          </div>
         </div>
       )}
     </div>

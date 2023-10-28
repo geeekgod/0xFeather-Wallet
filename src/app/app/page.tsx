@@ -2,9 +2,7 @@ import Wallet from "@/components/Wallet";
 import Link from "next/link";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
-import LogOutButton from "@/components/LogOutButton";
 import prisma from "@/lib/prisma";
-import { signOut } from "next-auth/react";
 import Navbar from "@/components/Navbar";
 
 const getSessionUser = async () => {
