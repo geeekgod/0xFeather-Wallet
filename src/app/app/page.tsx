@@ -49,7 +49,7 @@ export default async function App() {
           <Navbar {...user} />
         )
       }
-      <main className="flex h-screen w-screen flex-col items-center justify-between">
+      <main className="flex h-full min-h-screen w-screen flex-col items-center justify-between">
         <div className="bg-slate-900 w-full h-full">
           <div className="bg-gradient-to-b from-violet-600/[.15] via-transparent">
             <div className="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-8">
