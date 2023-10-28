@@ -1,48 +1,84 @@
-import NextAuth, { Session, User } from 'next-auth';
+import NextAuth, { AuthOptions, User as NextUser } from 'next-auth';
 import CredentialsProvider from "next-auth/providers/credentials";
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import UserModel from '@/models/User';
+import { compare } from 'bcryptjs';
+import prisma from '@/lib/prisma';
 
 const { MONGODB_URI, NEXTAUTH_SECRET } = process.env;
 
-const connectionStr = MONGODB_URI || 'mongodb://localhost:27017/BhangaarEth';
-const nextAuthSecret = NEXTAUTH_SECRET || 'VC+vjUs01kCfBCS+nG7XokbJUo/ftePbqrHDiUVIYuQ=WhoEverCopiesThisKeyIsGay';
+const connectionStr = MONGODB_URI;
 
-interface Credentials {
-  email: string;
-  password: string;
+if (!connectionStr) {
+  throw new Error('MONGODB_URI must be defined');
 }
 
-const handler = NextAuth({
+const nextAuthSecret = NEXTAUTH_SECRET;
+
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        async authorize(credentials: Credentials) {
-          try {
-            await mongoose.connect(connectionStr);
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials, req: any) {
+        try {
+          if (!credentials?.email) return null;
+          if (!credentials.email) return null;
 
-            const user = await UserModel.findOne({ email: credentials.email });
+          await mongoose.connect(connectionStr);
 
-            if (user && (await bcrypt.compare(credentials.password, user.password))) {
-              return user as User;
+          // const user = await User.findOne({ email: credentials.email });
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email
             }
+          });
 
-            return null;
-          } catch (error) {
-            console.error(error);
-            return null;
+          if (user && (await compare(credentials.password, user.password))) {
+            return user;
           }
-        },
+
+          return null;
+        } catch (error) {
+          console.error(error);
+          return null;
+        }
       },
     }),
   ],
+  secret: nextAuthSecret,
+  session: {
+    strategy: 'jwt'
+  },
   pages: {
     signIn: '/auth/sign_in',
-    newUser: '/auth/sign_up'
+    newUser: '/auth/sign_up',
   },
-  secret: nextAuthSecret
-})
+  callbacks: {
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+        },
+      };
+    },
+    jwt: ({ token, user }) => {
+      if (user) {
+        const u = user as unknown as any;
+        return {
+          ...token,
+          id: u.id,
+        };
+      }
+      return token;
+    },
+  },
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }

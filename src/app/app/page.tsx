@@ -1,7 +1,42 @@
 import Wallet from "@/components/Wallet";
 import Link from "next/link";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
+import LogOut from "@/components/LogOut";
+import prisma from "@/lib/prisma";
 
-export default function App() {
+const getSessionUser = async () => {
+  const session = await getServerSession(authOptions);
+  const user = session?.user;
+  return {
+    sessionUser: user,
+    session: session,
+  };
+}
+
+const getUserFromDb = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+    select: {
+      id: true,
+      email: true,
+      ethereumAddress: true,
+    },
+  });
+  return user;
+}
+
+export default async function App() {
+
+  const { sessionUser, session } = await getSessionUser();
+
+  let user = null;
+  if (sessionUser && sessionUser.email) {
+    user = await getUserFromDb(sessionUser.email);
+  }
+
   return (
     <main className="flex h-screen w-screen flex-col items-center justify-between">
       <div className="bg-slate-900 w-full h-full">
@@ -16,7 +51,7 @@ export default function App() {
                 </p>
                 <span className="group-hover:bg-white/[.1] py-2 px-3 inline-flex justify-center items-center gap-x-2 rounded-full bg-white/[.075] font-semibold text-white text-sm">
                   <svg className="w-2.5 h-2.5" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path d="M5.27921 2L10.9257 7.64645C11.1209 7.84171 11.1209 8.15829 10.9257 8.35355L5.27921 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    <path d="M5.27921 2L10.9257 7.64645C11.1209 7.84171 11.1209 8.15829 10.9257 8.35355L5.27921 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                   </svg>
                 </span>
               </Link>
@@ -29,7 +64,18 @@ export default function App() {
             </div>
 
             <div className="max-w-3xl text-center mx-auto">
-              <p className="text-lg text-gray-400">BhangaarEth is just another new wallet in the Ethereum ecosystem. And it just works!</p>
+              {/* <p className="text-lg text-gray-400">BhangaarEth is just another new wallet in the Ethereum ecosystem. And it just works!</p> */}
+              {sessionUser && user ? (
+                <>
+                  <p className="text-lg text-gray-400">Welcome back, {user.email}!</p>
+                  {/* Log out next auth */}
+                  <LogOut {...user} />
+                </>
+              ) : (
+                <div className="flex justify-center">
+                  <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+                </div>
+              )}
             </div>
           </div>
         </div>
