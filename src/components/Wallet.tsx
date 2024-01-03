@@ -228,14 +228,14 @@ const Wallet = (user: UserType) => {
           {/* Wallet Address */}
           <div className="mt-6 flex items-center justify-center">
             <div className="flex items-center justify-center">
-              <p className="text-xs uppercase tracking-wide text-gray-500">
+              <p className="text-xs uppercase tracking-wide text-gray-500 mr-3">
                 {'Wallet Address: '}
               </p>
             </div>
 
             <div className="mt-1 flex items-center justify-center">
               <h3 className="text-lg sm:text-xl font-medium text-gray-800 dark:text-gray-200">
-                {wallet.address}
+                {`${wallet.address.slice(0, 8)}...${wallet.address.slice(-5)}`}
               </h3>
             </div>
 
@@ -244,6 +244,7 @@ const Wallet = (user: UserType) => {
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(wallet.address);
+                  setSuccess("Copied to clipboard!");
                 }}
                 className="inline-flex px-4 py-2 justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800">
                 Copy!
