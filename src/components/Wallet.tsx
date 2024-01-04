@@ -100,6 +100,14 @@ const Wallet = (user: UserType) => {
       setWallet(newWallet);
     };
     fetchBalance();
+
+    // Fetch realtime balance
+    if (!wallet || !wallet.provider) return;
+    wallet.provider.on('block', () => {
+      fetchBalance();
+    })
+
+
   }, [wallet]);
 
 
