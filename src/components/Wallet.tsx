@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { createWallet } from '../lib/createWallet';
 import { ethers, JsonRpcProvider } from 'ethers';
 import { User } from '@prisma/client';
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+
 
 type UserType = Omit<User, 'password'>
 
@@ -182,6 +184,7 @@ const Wallet = (user: UserType) => {
       }
       {wallet && (
         <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
+          <Jazzicon diameter={50} seed={jsNumberForAddress(wallet.address)} />
           {/* Wallet Informations */}
           <div className="grid gap-4 sm:gap-6">
 
