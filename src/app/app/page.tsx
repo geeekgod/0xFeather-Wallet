@@ -70,12 +70,11 @@ export default async function App() {
 
               <div className="max-w-3xl text-center mx-auto">
                 <h4 className="block font-medium text-gray-200 text-xl sm:text-2xl md:text-3xl lg:text-4xl">
-                  Explore your BhangaarEth wallet.
+                  Explore your 0xFeather wallet.
                 </h4>
               </div>
 
               <div className="max-w-3xl text-center mx-auto">
-                {/* <p className="text-lg text-gray-400">BhangaarEth is just another new wallet in the Ethereum ecosystem. And it just works!</p> */}
                 {sessionUser && user ? (
                   <>
                     <p className="text-lg text-gray-400">Welcome back, {user.email}!</p>

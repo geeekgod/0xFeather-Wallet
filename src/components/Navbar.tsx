@@ -19,7 +19,7 @@ export default function Navbar(user: UserType) {
     <header className="flex justify-start flex-nowrap z-50 w-full bg-violet-900 border-b border-white/[.5] text-sm py-3 sm:py-0">
       <nav className="relative max-w-[85rem] w-full mx-auto px-4 flex items-center justify-between sm:px-6 lg:px-8" aria-label="Global">
         <div className="flex items-center justify-between">
-          <Link className="flex-none text-xl font-semibold text-white" href="/" aria-label="Brand">BhangarEth</Link>
+          <Link className="flex-none text-xl font-semibold text-white" href="/" aria-label="Brand">0xFeather</Link>
         </div>
         <div id="navbar-collapse-with-animation" className="hs-collapse overflow-hidden transition-all duration-300 basis-full grow sm:block">
           <div className="flex flex-row gap-y-4  items-center justify-end gap-x-5 mt-0 pl-7">
