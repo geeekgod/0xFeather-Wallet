@@ -11,15 +11,22 @@
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",
+    "@radix-ui/react-slot": "^1.0.2",
     "bcryptjs": "^2.4.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
     "ethers": "^6.8.0",
+    "lucide-react": "^0.305.0",
     "next": "13.5.4",
     "next-auth": "^4.24.4",
+    "next-themes": "^0.2.1",
     "prisma": "^5.5.2",
     "react": "^18",
     "react-dom": "^18",
     "react-jazzicon": "^1.0.4",
-    "react-query": "^3.39.3"
+    "react-query": "^3.39.3",
+    "tailwind-merge": "^2.2.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.5",

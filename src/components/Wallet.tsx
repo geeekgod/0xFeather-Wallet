@@ -268,7 +268,7 @@ const Wallet = (user: UserType) => {
             <button
               onClick={() => setTransferModalOpen(true)}
               className="mt-6 py-4 px-6 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800">
-              Transfer ETH with Bhangaar
+                Transfer ETH with 0xFeather
             </button>
           }
 
@@ -283,7 +283,7 @@ const Wallet = (user: UserType) => {
 
                     <div className="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                       <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        Send ETH with Bhangaar to anyone in the world!
+                        Send ETH with 0xFeather to anyone in the world!
                       </h3>
                       <button type="button"
                         className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
