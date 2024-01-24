@@ -1,8 +1,14 @@
 'use client'
 
+import { Metadata } from "next";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useState } from "react";
+
+export const metadata: Metadata = {
+  title: 'Sign Up | 0xFeather',
+  description: 'Start a new journey with 0xFeather wallet.',
+}
 
 export default function SignUp() {
 

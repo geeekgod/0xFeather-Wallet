@@ -1,9 +1,16 @@
 import Wallet from "@/components/Wallet";
 import Link from "next/link";
-import { authOptions } from "../api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import prisma from "@/lib/prisma";
 import Navbar from "@/components/Navbar";
+import { authOptions } from "@/lib/auth";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'App | 0xFeather',
+  description: 'Explore your 0xFeather wallet.',
+}
+
 
 const getSessionUser = async () => {
   const session = await getServerSession(authOptions);

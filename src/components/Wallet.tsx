@@ -5,6 +5,7 @@ import { createWallet } from '../lib/createWallet';
 import { ethers, JsonRpcProvider } from 'ethers';
 import { User } from '@prisma/client';
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 
 type UserType = Omit<User, 'password'>
@@ -13,6 +14,7 @@ const Wallet = (user: UserType) => {
   const provider = new JsonRpcProvider(
     process.env.NEXT_PUBLIC_INFURA_URL,
   );
+  const [] = useLocalStorage("wallets", []);
   const [wallet, setWallet] = useState<ethers.Wallet | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -268,7 +270,7 @@ const Wallet = (user: UserType) => {
             <button
               onClick={() => setTransferModalOpen(true)}
               className="mt-6 py-4 px-6 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800">
-                Transfer ETH with 0xFeather
+              Transfer ETH with 0xFeather
             </button>
           }
 

@@ -3,6 +3,7 @@ import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChangeEvent, useEffect, useState } from "react";
+import { Metadata } from "next";
 
 export default function SignIn() {
 
