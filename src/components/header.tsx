@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ModeToggle } from "./theme-toggle";
 import { getCurrentUser } from "@/lib/session";
 import Image from "next/image";
-// import { UserAccountNav } from "../user-account-nav";
+import { UserAccountNav } from "./user-account-nav";
 
 export const Header = async () => {
   const user = await getCurrentUser()
@@ -19,17 +19,17 @@ export const Header = async () => {
               Wallet
             </Link>
           ) : (
-            <Link className="text-sm font-medium hover:underline underline-offset-4" href="/login">
+            <Link className="text-sm font-medium hover:underline underline-offset-4" href="/auth/sign_in">
               Login
             </Link>
           )
         }
         <ModeToggle />
-        {/* {
+        {
           user && (
             <UserAccountNav user={user} />
           )
-        } */}
+        }
       </nav>
     </header>
   );

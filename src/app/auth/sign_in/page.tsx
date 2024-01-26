@@ -1,4 +1,5 @@
 "use client";
+
 import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -58,15 +59,15 @@ export default function SignIn() {
 
   return (
     <main className="flex h-screen w-screen flex-col items-center justify-between">
-      <div className="bg-slate-900 w-full h-full">
-        <div className="bg-gradient-to-b from-violet-600/[.15] via-transparent flex flex-col h-screen justify-center items-center">
-          <div className="pt-7 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700 w-[90%] md:w-[70%] lg:w-[50%]">
+      <div className="w-full h-full">
+        <div className="via-transparent flex flex-col h-screen justify-center items-center">
+          <div className="pt-7 border border-gray-200 rounded-xl shadow-sm dark:bg-secondary dark:border-gray-700 w-[90%] md:w-[70%] lg:w-[50%]">
             <div className="p-4 sm:p-7">
               <div className="text-center">
                 <h1 className="block text-2xl font-bold text-gray-800 dark:text-white">Sign in</h1>
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                   Don&apos;t have an account yet?
-                  <Link href="/auth/sign_up" className="text-blue-600 decoration-2 hover:underline font-medium">
+                  <Link href="/auth/sign_up" className="ml-2 text-primary decoration-2 hover:underline font-medium">
                     Sign up here
                   </Link>
                 </p>
@@ -128,7 +129,7 @@ export default function SignIn() {
 
                     <button
                       disabled={loading}
-                      type="submit" className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800">
+                      type="submit" className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-primary text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm dark:focus:ring-offset-gray-800">
                       {loading ?
                         <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent text-white rounded-full" role="status" aria-label="loading">
                           <span className="sr-only">Loading...</span>
