@@ -1,12 +1,6 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata: Metadata = {
-  title: 'App | 0xFeather',
-  description: 'Explore your 0xFeather wallet.',
-}
+import '@/app/globals.css'
+import { Header } from '@/components/header'
+import { Toaster } from '@/components/ui/toaster'
 
 export default function RootLayout({
   children,
@@ -14,8 +8,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+    <>
+      <Header />
+      {children}
+      <Toaster />
+    </>
   )
 }
