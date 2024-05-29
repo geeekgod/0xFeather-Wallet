@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react';
-import { createWallet } from '../lib/createWallet';
-import { ethers, JsonRpcProvider } from 'ethers';
-import { User } from '@prisma/client';
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon';
-import useLocalStorage from '@/hooks/useLocalStorage';
+import { useEffect, useState } from "react";
+import { createWallet } from "../lib/createWallet";
+import { ethers, JsonRpcProvider } from "ethers";
+import { User } from "@prisma/client";
+import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import {
   Card,
   CardContent,
@@ -13,19 +13,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { useToast } from './ui/use-toast';
-import { Button } from "@/components/ui/button"
-import { TransferDialog } from './transfer-dialog';
+} from "@/components/ui/card";
+import { useToast } from "./ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { TransferDialog } from "./transfer-dialog";
 
-
-
-type UserType = Omit<User, 'password'>
+type UserType = Omit<User, "password">;
 
 const Wallet = (user: UserType) => {
-  const provider = new JsonRpcProvider(
-    process.env.NEXT_PUBLIC_INFURA_URL,
-  );
+  const provider = new JsonRpcProvider(process.env.NEXT_PUBLIC_INFURA_URL);
   const [] = useLocalStorage("wallets", []);
   const [wallet, setWallet] = useState<ethers.Wallet | null>(null);
   const [balance, setBalance] = useState<string | null>(null);
@@ -33,35 +29,34 @@ const Wallet = (user: UserType) => {
   const [transferAmount, setTransferAmount] = useState<string | null>(null);
   const [recepientAddress, setRecepientAddress] = useState<string | null>(null);
   const [transferDialogOpen, setTransferDialogOpen] = useState<boolean>(false);
+  const [isTransferring, setIsTransferring] = useState<boolean>(false);
 
   const { toast } = useToast();
 
   useEffect(() => {
-
     const saveWallet = async (wallet: ethers.Wallet) => {
-      const res = await fetch('/api/wallet', {
-        method: 'POST',
+      const res = await fetch("/api/wallet", {
+        method: "POST",
         body: JSON.stringify({
           ethereumAddress: wallet.address,
           ethereumPrivKey: wallet.privateKey,
         }),
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': user.id.toString(),
+          "Content-Type": "application/json",
+          Authorization: user.id.toString(),
         },
       });
 
       if (!res.ok) {
         toast({
           description: (await res.json()).message,
-          variant: 'destructive'
+          variant: "destructive",
         });
         return;
       }
-    }
+    };
 
     const handleCreateWallet = async () => {
-
       // set wallet from user's private key and address
       if (user.ethereumPrivKey && user.ethereumAddress) {
         const newWallet = new ethers.Wallet(user.ethereumPrivKey);
@@ -79,26 +74,26 @@ const Wallet = (user: UserType) => {
 
   // send address & private key to backend at /api/wallet/new using fetch
   const saveWallet = async (wallet: ethers.Wallet) => {
-    const res = await fetch('/api/wallet', {
-      method: 'POST',
+    const res = await fetch("/api/wallet", {
+      method: "POST",
       body: JSON.stringify({
         ethereumAddress: wallet.address,
         ethereumPrivKey: wallet.privateKey,
       }),
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': user.id.toString(),
+        "Content-Type": "application/json",
+        Authorization: user.id.toString(),
       },
     });
 
     if (!res.ok) {
       toast({
         description: (await res.json()).message,
-        variant: 'destructive'
+        variant: "destructive",
       });
       return;
     }
-  }
+  };
 
   const fetchBalance = async () => {
     if (!wallet) return;
@@ -106,13 +101,15 @@ const Wallet = (user: UserType) => {
     if (!wallet.address) return;
 
     const balance = await wallet.provider.getBalance(wallet.address);
-    const transactionCount = await wallet.provider.getTransactionCount(wallet.address);
+    const transactionCount = await wallet.provider.getTransactionCount(
+      wallet.address
+    );
 
     const etherString = ethers.formatEther(balance);
     setBalance(etherString);
 
     setTransactionCount(transactionCount.toString());
-  }
+  };
 
   useEffect(() => {
     if (!wallet) return;
@@ -120,18 +117,15 @@ const Wallet = (user: UserType) => {
     if (!wallet.provider) {
       const newWallet = wallet.connect(provider);
       setWallet(newWallet);
-    };
+    }
     fetchBalance();
 
     // Fetch realtime balance
     if (!wallet || !wallet.provider) return;
-    wallet.provider.on('block', () => {
+    wallet.provider.on("block", () => {
       fetchBalance();
-    })
-
-
+    });
   }, [wallet]);
-
 
   const transfer = async () => {
     if (!wallet) return;
@@ -139,24 +133,25 @@ const Wallet = (user: UserType) => {
     if (!wallet.address) return;
     if (!recepientAddress) {
       return toast({
-        description: 'Please enter a recipient address',
-        variant: 'destructive'
-      })
-    };
+        description: "Please enter a recipient address",
+        variant: "destructive",
+      });
+    }
     if (!transferAmount) {
       return toast({
-        description: 'Please enter a transfer amount',
-        variant: 'destructive'
+        description: "Please enter a transfer amount",
+        variant: "destructive",
       });
-    };
+    }
 
     if (isNaN(parseFloat(transferAmount))) {
       return toast({
-        description: 'Please enter a valid transfer amount',
-        variant: 'destructive'
+        description: "Please enter a valid transfer amount",
+        variant: "destructive",
       });
     }
     try {
+      setIsTransferring(true);
       const transaction = await wallet.sendTransaction({
         to: recepientAddress,
         value: ethers.parseEther(transferAmount),
@@ -166,30 +161,33 @@ const Wallet = (user: UserType) => {
       fetchBalance();
       setRecepientAddress(null);
       setTransferAmount(null);
-      setTimeout(() => { setTransferDialogOpen(false) }, 500);
+      setTimeout(() => {
+        setTransferDialogOpen(false);
+      }, 500);
       return toast({
-        description: "Transaction successful!"
-      })
-    }
-    catch (error: any) {
-      if (error.message.includes('network does not support ENS '))
+        description: "Transaction successful!",
+      });
+    } catch (error: any) {
+      if (error.message.includes("network does not support ENS "))
         return toast({
           description: "Please Enter Correct Wallet Address!",
-          variant: 'destructive'
+          variant: "destructive",
         });
-      else if (error.message.includes('insufficient funds'))
+      else if (error.message.includes("insufficient funds"))
         return toast({
           title: "Please enter correct Amount!",
           description: "Your wallet doesn't have sufficient funds!",
-          variant: 'destructive'
+          variant: "destructive",
         });
       else
         return toast({
           description: "There was some error please try again later!",
-          variant: 'destructive'
+          variant: "destructive",
         });
+    } finally {
+      setIsTransferring(false);
     }
-  }
+  };
 
   return (
     <div>
@@ -198,7 +196,6 @@ const Wallet = (user: UserType) => {
           <Jazzicon diameter={50} seed={jsNumberForAddress(wallet.address)} />
           {/* Wallet Informations */}
           <div className="my-2 grid md:grid-cols-2 gap-4 sm:gap-6">
-
             {/* Balance */}
             <Card>
               <CardHeader>
@@ -206,16 +203,19 @@ const Wallet = (user: UserType) => {
                 <CardDescription>Your total ETH Balance</CardDescription>
               </CardHeader>
               <CardContent>
-                {
-                  balance ?
-                    <p className="text-xl sm:text-2xl font-medium">
-                      {balance} ETH
-                    </p>
-                    :
-                    <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent rounded-full" role="status" aria-label="loading">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                }
+                {balance ? (
+                  <p className="text-xl sm:text-2xl font-medium">
+                    {balance} ETH
+                  </p>
+                ) : (
+                  <div
+                    className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent rounded-full"
+                    role="status"
+                    aria-label="loading"
+                  >
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -223,29 +223,33 @@ const Wallet = (user: UserType) => {
             <Card>
               <CardHeader>
                 <CardTitle>Transactions</CardTitle>
-                <CardDescription>Total ETH Transactions you initiated</CardDescription>
+                <CardDescription>
+                  Total ETH Transactions you initiated
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                {
-                  transactionCount ?
-                    <p className="text-xl sm:text-2xl font-medium">
-                      {transactionCount}
-                    </p>
-                    :
-                    <div className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent rounded-full" role="status" aria-label="loading">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                }
+                {transactionCount ? (
+                  <p className="text-xl sm:text-2xl font-medium">
+                    {transactionCount}
+                  </p>
+                ) : (
+                  <div
+                    className="animate-spin inline-block w-6 h-6 border-[3px] border-current border-t-transparent rounded-full"
+                    role="status"
+                    aria-label="loading"
+                  >
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
-
           </div>
 
           {/* Wallet Address */}
           <div className="mt-6 flex items-center justify-center">
             <div className="flex items-center justify-center">
               <p className="text-xs uppercase tracking-wide text-gray-500 mr-3">
-                {'Wallet Address: '}
+                {"Wallet Address: "}
               </p>
             </div>
 
@@ -279,6 +283,7 @@ const Wallet = (user: UserType) => {
             transferAmount={transferAmount}
             setTransferAmount={setTransferAmount}
             transfer={transfer}
+            isTransferring={isTransferring}
           />
         </div>
       )}

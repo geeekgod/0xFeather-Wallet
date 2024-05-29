@@ -6,10 +6,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface TransferDialogProps {
   transferDialogOpen: boolean;
@@ -19,6 +20,7 @@ interface TransferDialogProps {
   transferAmount: string | null;
   setTransferAmount: (amount: string) => void;
   transfer: () => void;
+  isTransferring: boolean;
 }
 
 export const TransferDialog = ({
@@ -29,18 +31,20 @@ export const TransferDialog = ({
   transferAmount,
   setTransferAmount,
   transfer,
+  isTransferring,
 }: TransferDialogProps) => {
   return (
-    <Dialog
-      open={transferDialogOpen}
-      onOpenChange={setTransferDialogOpen}
-    >
+    <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
       <DialogTrigger asChild>
-        <Button
-          className='my-4'
-        >Transfer ETH</Button>
+        <Button className="my-4">Transfer ETH</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        onInteractOutside={(e) => {
+          if (isTransferring) e.preventDefault();
+        }}
+        closeButtonDisabled={isTransferring}
+        className="sm:max-w-[425px]"
+      >
         <DialogHeader>
           <DialogTitle>Transfer</DialogTitle>
           <DialogDescription>
@@ -72,14 +76,18 @@ export const TransferDialog = ({
           </div>
         </div>
         <DialogFooter>
-          <Button
-            type="button"
-            onClick={transfer}
-          >Send ETH!
+          <Button disabled={isTransferring} type="button" onClick={transfer}>
+            {isTransferring ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                {"Transferring"}
+              </>
+            ) : (
+              "Send ETH!"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-
   );
-}
+};
