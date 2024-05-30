@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "./ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { TransferDialog } from "./transfer-dialog";
+import { TransferDialog } from "./wallet/transfer-dialog";
+import CurrentAddressQR from "./wallet/current-address-qr";
 
 type UserType = Omit<User, "password">;
 
@@ -95,6 +96,20 @@ const Wallet = (user: UserType) => {
     }
   };
 
+  const fetchTransactions = async () => {
+    const res = await fetch("/api/wallet/transactions", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user.id.toString(),
+      },
+    });
+
+    const response = await res.json();
+
+    console.log("Transactions: ", response);
+  };
+
   const fetchBalance = async () => {
     if (!wallet) return;
     if (!wallet.provider) return;
@@ -126,6 +141,17 @@ const Wallet = (user: UserType) => {
       fetchBalance();
     });
   }, [wallet]);
+
+  useEffect(() => {
+    const transactionInterval = setInterval(() => {
+      fetchTransactions();
+    }, 15000);
+
+    return () => {
+      if (!transactionInterval) return;
+      clearInterval(transactionInterval);
+    };
+  }, [wallet, fetchTransactions]);
 
   const transfer = async () => {
     if (!wallet) return;
@@ -261,16 +287,7 @@ const Wallet = (user: UserType) => {
 
             {/* Copy to clipboard button for wallet address */}
             <div className="ml-4">
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(wallet.address);
-                  toast({
-                    description: "Your Wallet Address is copied to clipboard!",
-                  });
-                }}
-              >
-                Copy!
-              </Button>
+              <CurrentAddressQR address={wallet.address} />
             </div>
           </div>
 
