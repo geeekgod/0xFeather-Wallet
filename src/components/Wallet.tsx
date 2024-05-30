@@ -16,7 +16,8 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "./ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { TransferDialog } from "./transfer-dialog";
+import { TransferDialog } from "./wallet/transfer-dialog";
+import CurrentAddressQR from "./wallet/current-address-qr";
 
 type UserType = Omit<User, "password">;
 
@@ -286,16 +287,7 @@ const Wallet = (user: UserType) => {
 
             {/* Copy to clipboard button for wallet address */}
             <div className="ml-4">
-              <Button
-                onClick={() => {
-                  navigator.clipboard.writeText(wallet.address);
-                  toast({
-                    description: "Your Wallet Address is copied to clipboard!",
-                  });
-                }}
-              >
-                Copy!
-              </Button>
+              <CurrentAddressQR address={wallet.address} />
             </div>
           </div>
 

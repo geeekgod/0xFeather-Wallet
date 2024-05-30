@@ -53,20 +53,13 @@ export async function GET(req: Request) {
 
     const { result } = await res.data;
 
-    // const userTransactions = result.map((transaction: any) => ({
-    //   transactionHash: transaction.transactionHash,
-    //   from: transaction.from,
-    //   to: transaction.to,
-    //   value: transaction.value,
-    //   timestamp: transaction.timestamp,
-    //   gas: transaction.gas,
-    // }));
+    const { transfers } = result;
 
     return new NextResponse(
       JSON.stringify({
         status: "success",
         message: "User Transactions found successfully",
-        userTransactions: result,
+        transfers: transfers,
       }),
       { status: 200 }
     );
