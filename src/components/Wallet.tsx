@@ -95,6 +95,20 @@ const Wallet = (user: UserType) => {
     }
   };
 
+  const fetchTransactions = async () => {
+    const res = await fetch("/api/wallet/transactions", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user.id.toString(),
+      },
+    });
+
+    const response = await res.json();
+
+    console.log("Transactions: ", response);
+  };
+
   const fetchBalance = async () => {
     if (!wallet) return;
     if (!wallet.provider) return;
@@ -126,6 +140,17 @@ const Wallet = (user: UserType) => {
       fetchBalance();
     });
   }, [wallet]);
+
+  useEffect(() => {
+    const transactionInterval = setInterval(() => {
+      fetchTransactions();
+    }, 15000);
+
+    return () => {
+      if (!transactionInterval) return;
+      clearInterval(transactionInterval);
+    };
+  }, [wallet, fetchTransactions]);
 
   const transfer = async () => {
     if (!wallet) return;
