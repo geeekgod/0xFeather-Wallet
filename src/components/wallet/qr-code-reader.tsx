@@ -1,5 +1,4 @@
 import React from "react";
-// import { QrReader } from "react-qr-reader";
 // @ts-ignore
 import QrReader from "react-qr-scanner";
 import { Button } from "@/components/ui/button";
