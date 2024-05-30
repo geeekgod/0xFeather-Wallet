@@ -36,11 +36,14 @@ export const TransferDialog = ({
   return (
     <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
       <DialogTrigger asChild>
-        <Button className="my-4">Transfer ETH</Button>
+        <Button className="my-4">Enter Address</Button>
       </DialogTrigger>
       <DialogContent
         onInteractOutside={(e) => {
           if (isTransferring) e.preventDefault();
+        }}
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
         }}
         closeButtonDisabled={isTransferring}
         className="sm:max-w-[425px]"

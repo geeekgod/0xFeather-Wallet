@@ -15,9 +15,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "./ui/use-toast";
-import { Button } from "@/components/ui/button";
 import { TransferDialog } from "./wallet/transfer-dialog";
 import CurrentAddressQR from "./wallet/current-address-qr";
+import QRCodeReader from "./wallet/qr-code-reader";
 
 type UserType = Omit<User, "password">;
 
@@ -31,6 +31,7 @@ const Wallet = (user: UserType) => {
   const [recepientAddress, setRecepientAddress] = useState<string | null>(null);
   const [transferDialogOpen, setTransferDialogOpen] = useState<boolean>(false);
   const [isTransferring, setIsTransferring] = useState<boolean>(false);
+  const [isQRReaderOpen, setIsQRReaderOpen] = useState<boolean>(false);
 
   const { toast } = useToast();
 
@@ -292,16 +293,24 @@ const Wallet = (user: UserType) => {
           </div>
 
           {/* Transfer Form */}
-          <TransferDialog
-            transferDialogOpen={transferDialogOpen}
-            setTransferDialogOpen={setTransferDialogOpen}
-            recepientAddress={recepientAddress}
-            setRecepientAddress={setRecepientAddress}
-            transferAmount={transferAmount}
-            setTransferAmount={setTransferAmount}
-            transfer={transfer}
-            isTransferring={isTransferring}
-          />
+          <div className="mt-6 flex items-center justify-center gap-4">
+            <TransferDialog
+              transferDialogOpen={transferDialogOpen}
+              setTransferDialogOpen={setTransferDialogOpen}
+              recepientAddress={recepientAddress}
+              setRecepientAddress={setRecepientAddress}
+              transferAmount={transferAmount}
+              setTransferAmount={setTransferAmount}
+              transfer={transfer}
+              isTransferring={isTransferring}
+            />
+            <QRCodeReader
+              isQRReaderOpen={isQRReaderOpen}
+              setRecepientAddress={setRecepientAddress}
+              setIsQRReaderOpen={setIsQRReaderOpen}
+              setTransferDialogOpen={setTransferDialogOpen}
+            />
+          </div>
         </div>
       )}
     </div>

@@ -8,8 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
 
 type CurrentAddressQRProps = {
@@ -22,7 +20,12 @@ const CurrentAddressQR = ({ address }: CurrentAddressQRProps) => {
       <DialogTrigger asChild>
         <Button>Receive</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
+        className="sm:max-w-[425px]"
+      >
         <DialogHeader>
           <DialogTitle>Receive ETH</DialogTitle>
           <DialogDescription>
