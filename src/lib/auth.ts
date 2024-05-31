@@ -1,16 +1,16 @@
-import { AuthOptions, NextAuthOptions } from "next-auth"
+import { AuthOptions, NextAuthOptions } from "next-auth";
 // Providers
 import CredentialsProvider from "next-auth/providers/credentials";
 // Adapters
-import prisma from '@/lib/prisma';
-import { compare } from 'bcryptjs';
+import prisma from "@/lib/prisma";
+import { compare } from "bcryptjs";
 
 const { MONGODB_URI, NEXTAUTH_SECRET } = process.env;
 
 const connectionStr = MONGODB_URI;
 
 if (!connectionStr) {
-  throw new Error('MONGODB_URI must be defined');
+  throw new Error("MONGODB_URI must be defined");
 }
 
 const nextAuthSecret = NEXTAUTH_SECRET;
@@ -18,10 +18,10 @@ const nextAuthSecret = NEXTAUTH_SECRET;
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      name: 'Credentials',
+      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req: any) {
         try {
@@ -30,8 +30,8 @@ export const authOptions: AuthOptions = {
 
           const user = await prisma.user.findUnique({
             where: {
-              email: credentials.email
-            }
+              email: credentials.email,
+            },
           });
 
           if (user && (await compare(credentials.password, user.password))) {
@@ -48,11 +48,11 @@ export const authOptions: AuthOptions = {
   ],
   secret: nextAuthSecret,
   session: {
-    strategy: 'jwt'
+    strategy: "jwt",
   },
   pages: {
-    signIn: '/auth/sign_in',
-    newUser: '/auth/sign_up',
+    signIn: "/auth/sign_in",
+    newUser: "/auth/sign_up",
   },
   callbacks: {
     session: ({ session, token }) => {
@@ -75,4 +75,4 @@ export const authOptions: AuthOptions = {
       return token;
     },
   },
-}
+};
