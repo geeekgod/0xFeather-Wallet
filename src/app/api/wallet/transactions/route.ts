@@ -1,59 +1,107 @@
-import prisma from "../../../../lib/prisma";
 import { NextResponse } from "next/server";
 import axios from "axios";
 
 const NEXT_ALCHEMY_SEPOLIA_KEY = process.env.NEXT_ALCHEMY_SEPOLIA_KEY;
 
-export async function GET(req: Request) {
+// sepolia api
+const url = `https://eth-sepolia.g.alchemy.com/v2/${NEXT_ALCHEMY_SEPOLIA_KEY}`;
+
+const fetchOutGoingTransactions = async (address: string) => {
+  const data = JSON.stringify({
+    jsonrpc: "2.0",
+    id: 0,
+    method: "alchemy_getAssetTransfers",
+    params: [
+      {
+        fromBlock: "0x0",
+        fromAddress: address,
+        category: ["external", "erc20", "erc721", "erc1155"],
+      },
+    ],
+  });
+
+  const res = await axios.post(url, data, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status !== 200) {
+    console.error("result", res.data);
+    throw new Error(res.data.message);
+  }
+
+  const { result } = await res.data;
+
+  const { transfers } = result;
+
+  return {
+    outGoingTransfers: transfers,
+  };
+};
+
+const fetchIncomingTransactions = async (address: string) => {
+  const data = JSON.stringify({
+    jsonrpc: "2.0",
+    id: 0,
+    method: "alchemy_getAssetTransfers",
+    params: [
+      {
+        fromBlock: "0x0",
+        excludeZeroValue: true,
+        toAddress: address,
+        category: ["internal", "external", "erc20", "erc721", "erc1155"],
+      },
+    ],
+  });
+
+  const res = await axios.post(url, data, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.status !== 200) {
+    console.error("result", res.data);
+    throw new Error(res.data.message);
+  }
+
+  const { result } = await res.data;
+
+  const { transfers } = result;
+
+  return {
+    inComingTransfers: transfers,
+  };
+};
+
+export async function POST(req: Request) {
   try {
-    const authorization = req.headers.get("authorization");
+    const { ethereumAddress } = (await req.json()) as {
+      ethereumAddress: string;
+    };
 
-    // Check if user already has ethereumPrivKey and ethereumAddress
-    const user = await prisma.user.findUnique({
-      where: { id: authorization as string },
-      select: { ethereumPrivKey: true, ethereumAddress: true },
-    });
-
-    if (!user) {
+    if (!ethereumAddress) {
       return new NextResponse(
         JSON.stringify({
           status: "error",
-          message: "User Not Found",
+          message: "Address not present!",
         }),
         { status: 400 }
       );
     }
 
-    const data = JSON.stringify({
-      jsonrpc: "2.0",
-      id: 0,
-      method: "alchemy_getAssetTransfers",
-      params: [
-        {
-          fromBlock: "0x0",
-          fromAddress: user.ethereumAddress,
-          category: ["external", "internal", "erc20", "erc721", "erc1155"],
-        },
-      ],
-    });
+    const { outGoingTransfers } = await fetchOutGoingTransactions(
+      ethereumAddress
+    );
+    const { inComingTransfers } = await fetchIncomingTransactions(
+      ethereumAddress
+    );
 
-    // sepolia api
-    const url = `https://eth-sepolia.g.alchemy.com/v2/${NEXT_ALCHEMY_SEPOLIA_KEY}`;
-
-    const res = await axios.post(url, data, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (res.status !== 200) {
-      console.error("result", res.data);
-      throw new Error(res.data.message);
-    }
-
-    const { result } = await res.data;
-
-    const { transfers } = result;
+    const transfers = {
+      outGoingTransfers,
+      inComingTransfers,
+    };
 
     return new NextResponse(
       JSON.stringify({

@@ -18,6 +18,8 @@ import { useToast } from "./ui/use-toast";
 import { TransferDialog } from "./wallet/transfer-dialog";
 import CurrentAddressQR from "./wallet/current-address-qr";
 import QRCodeReader from "./wallet/qr-code-reader";
+import { TransactionList } from "./wallet/transactions-list";
+import { Transactions } from "@/types";
 
 type UserType = Omit<User, "password">;
 
@@ -32,6 +34,14 @@ const Wallet = (user: UserType) => {
   const [transferDialogOpen, setTransferDialogOpen] = useState<boolean>(false);
   const [isTransferring, setIsTransferring] = useState<boolean>(false);
   const [isQRReaderOpen, setIsQRReaderOpen] = useState<boolean>(false);
+  const [transactions, setTransactions] = useState<Transactions>({
+    outGoingTransfers: [],
+    inComingTransfers: [],
+    fetched: false,
+  });
+  const [transactionListDialogOpen, setTransactionListDialogOpen] =
+    useState(false);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
 
   const { toast } = useToast();
 
@@ -98,17 +108,36 @@ const Wallet = (user: UserType) => {
   };
 
   const fetchTransactions = async () => {
-    const res = await fetch("/api/wallet/transactions", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: user.id.toString(),
-      },
-    });
+    try {
+      setTransactionsLoading(true);
 
-    const response = await res.json();
+      const data = JSON.stringify({
+        ethereumAddress: user.ethereumAddress,
+      });
 
-    console.log("Transactions: ", response);
+      const res = await fetch("/api/wallet/transactions", {
+        method: "POST",
+        body: data,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: user.id.toString(),
+        },
+      });
+
+      const response = await res.json();
+      setTransactions({
+        inComingTransfers: response.transfers.inComingTransfers,
+        outGoingTransfers: response.transfers.outGoingTransfers,
+        fetched: true,
+      });
+    } catch {
+      toast({
+        description: "There was some error while fetching transactions",
+        variant: "destructive",
+      });
+    } finally {
+      setTransactionsLoading(false);
+    }
   };
 
   const fetchBalance = async () => {
@@ -142,17 +171,6 @@ const Wallet = (user: UserType) => {
       fetchBalance();
     });
   }, [wallet]);
-
-  useEffect(() => {
-    const transactionInterval = setInterval(() => {
-      fetchTransactions();
-    }, 15000);
-
-    return () => {
-      if (!transactionInterval) return;
-      clearInterval(transactionInterval);
-    };
-  }, [wallet, fetchTransactions]);
 
   const transfer = async () => {
     if (!wallet) return;
@@ -247,7 +265,12 @@ const Wallet = (user: UserType) => {
             </Card>
 
             {/* Total ETH Transactions */}
-            <Card>
+            <Card
+              className="cursor-pointer"
+              onClick={() => {
+                setTransactionListDialogOpen(true);
+              }}
+            >
               <CardHeader>
                 <CardTitle>Transactions</CardTitle>
                 <CardDescription>
@@ -269,6 +292,14 @@ const Wallet = (user: UserType) => {
                   </div>
                 )}
               </CardContent>
+              <TransactionList
+                ethereumAddress={user.ethereumAddress}
+                transactions={transactions}
+                transactionListDialogOpen={transactionListDialogOpen}
+                setTransactionListDialogOpen={setTransactionListDialogOpen}
+                fetchTransactions={fetchTransactions}
+                transactionsLoading={transactionsLoading}
+              />
             </Card>
           </div>
 

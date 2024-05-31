@@ -9,12 +9,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import { useToast } from "../ui/use-toast";
 
 type CurrentAddressQRProps = {
   address: string;
 };
 
 const CurrentAddressQR = ({ address }: CurrentAddressQRProps) => {
+  const { toast } = useToast();
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -45,6 +47,9 @@ const CurrentAddressQR = ({ address }: CurrentAddressQRProps) => {
             <Button
               onClick={() => {
                 navigator.clipboard.writeText(address);
+                toast({
+                  description: "Your Wallet Address is copied to clipboard!",
+                });
               }}
             >
               Copy Address
